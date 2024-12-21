@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Finder Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: rgba(26, 35, 126, 0.8);
+            color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .logo {
+            max-height: 60px;
+            animation: slideIn 1s ease-in-out forwards;
+            opacity: 0;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        h1 {
+            margin: 0.5rem 0;
+            font-size: 2.5rem;
+            animation: fadeIn 2s 1s forwards;
+            opacity: 0;
+        }
+        p {
+            margin-top: 0.5rem;
+            font-size: 1.2rem;
+            animation: fadeIn 2s 1.5s forwards;
+            opacity: 0;
+        }
+        .wishlist-icon {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #fff;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        form input {
+            flex: 1;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+        }
+        form button {
+            padding: 0.7rem 1.5rem;
+            background-color: #3949ab;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #283593;
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .book {
+            flex: 1 1 calc(33% - 1.5rem);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: #fafafa;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .book:hover {
+            transform: scale(1.05);
+        }
+        .book img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+        .book h3 {
+            margin: 0.5rem 0;
+            font-size: 1.2rem;
+            color: #1a237e;
+        }
+        .book p {
+            margin: 0.3rem 0;
+            color: #555;
+        }
+        .actions {
+            margin-top: 0.5rem;
+        }
+        .actions button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            margin: 0.3rem;
+            cursor: pointer;
+        }
+        .actions .details {
+            background-color: #0288d1;
+            color: #fff;
+        }
+        .actions .details:hover {
+            background-color: #0277bd;
+        }
+        .actions .favorite {
+            background-color: #ff6f00;
+            color: #fff;
+        }
+        .actions .favorite:hover {
+            background-color: #e65100;
+        }
+        footer {
+            background-color: rgba(26, 35, 126, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #wishlist {
+            display: none;
+            position: fixed;
+            top: 20%;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            max-width: 300px;
+            padding: 1rem;
+            z-index: 1000;
+        }
+        #wishlist h3 {
+            margin: 0 0 1rem;
+            font-size: 1.2rem;
+            color: #1a237e;
+        }
+        #wishlist ul {
+            list-style: none;
+            padding: 0;
+        }
+        #wishlist ul li {
+            margin: 0.5rem 0;
+        }
+        #wishlist ul li button {
+            margin-left: 10px;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+            background-color: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            width: 100%;
+            display: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .suggestions li {
+            padding: 0.7rem;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+        .suggestions li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="librarypic.png" alt="Book Finder Pro Logo" class="logo">
+        <h1>Book Finder Pro</h1>
+        <p>Find your next favorite book with ease!</p>
+        <span class="wishlist-icon" onclick="toggleWishlist()">📚 Wishlist</span>
+    </header>
+    <div class="container">
+        <form id="bookSearchForm">
+            <input type="text" id="searchQuery" placeholder="Search for books by title, author, or genre..." required />
+            <button type="submit">Search</button>
+            <ul class="suggestions" id="suggestionsList"></ul>
+        </form>
+        <div class="results" id="results"></div>
+    </div>
+    <div id="wishlist">
+        <h3>My Wishlist</h3>
+        <ul id="wishlistItems"></ul>
+    </div>
+    <footer>
+        <p>&copy; 2024 Book Finder Pro. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('bookSearchForm');
+        const resultsContainer = document.getElementById('results');
+        const wishlistContainer = document.getElementById('wishlist');
+        const wishlistItems = document.getElementById('wishlistItems');
+        const suggestionsList = document.getElementById('suggestionsList');
+        const wishlist = [];
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const query = document.getElementById('searchQuery').value;
+
+            if (!query.trim()) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            resultsContainer.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                displayResults(data.items);
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                resultsContainer.innerHTML = '<p>Failed to fetch results.</p>';
+            }
+        });
+
+        const displayResults = (books) => {
+            resultsContainer.innerHTML = '';
+            if (books && books.length > 0) {
+                books.forEach(book => {
+                    const bookId = book.id;
+                    const title = book.volumeInfo.title || 'No Title';
+                    const authors = book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author';
+                    const description = book.volumeInfo.description || 'No description available.';
+                    const thumbnail = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'https://via.placeholder.com/128x192';
+
+                    resultsContainer.innerHTML += `
+                        <div class="book" data-book-id="${bookId}">
+                            <img src="${thumbnail}" alt="${title}">
+                            <h3>${title}</h3>
+                            <p>${authors}</p>
+                            <p>${description}</p>
+                            <div class="actions">
+                                <button class="details" onclick="viewDetails('${bookId}')">View Details</button>
+                                <button class="favorite" onclick="addToWishlist('${bookId}')">Add to Wishlist</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                resultsContainer.innerHTML = '<p>No results found.</p>';
+            }
+        };
+
+        const addToWishlist = (bookId) => {
+            const existingBook = wishlist.find(book => book.id === bookId);
+            if (existingBook) return; 
+
+            const bookElement = document.querySelector(`[data-book-id="${bookId}"]`);
+            const title = bookElement.querySelector('h3').innerText;
+            const authors = bookElement.querySelector('p').innerText;
+
+            wishlist.push({ id: bookId, title, authors });
+            updateWishlist();
+        };
+
+        const updateWishlist = () => {
+            wishlistItems.innerHTML = '';
+            wishlist.forEach(book => {
+                wishlistItems.innerHTML += `
+                    <li>${book.title} by ${book.authors} <button onclick="removeFromWishlist('${book.id}')">Remove</button></li>
+                `;
+            });
+        };
+
+        const removeFromWishlist = (bookId) => {
+            const bookIndex = wishlist.findIndex(book => book.id === bookId);
+            if (bookIndex !== -1) {
+                wishlist.splice(bookIndex, 1);
+                updateWishlist();
+            }
+        };
+
+        const toggleWishlist = () => {
+            wishlistContainer.style.display = wishlistContainer.style.display === 'none' ? 'block' : 'none';
+        };
+
+        const viewDetails = (bookId) => {
+            window.open(`https://books.google.com/books?id=${bookId}`, '_blank');
+        };
+
+        document.getElementById('searchQuery').addEventListener('input', async (e) => {
+            const query = e.target.value;
+            if (query.trim() === '') {
+                suggestionsList.style.display = 'none';
+                return;
+            }
+            try {
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                const suggestions = data.items.slice(0, 5).map(book => book.volumeInfo.title);
+                suggestionsList.innerHTML = suggestions.map(suggestion => `<li>${suggestion}</li>`).join('');
+                suggestionsList.style.display = 'block';
+            } catch (error) {
+                suggestionsList.innerHTML = '<li>No suggestions available</li>';
+            }
+        });
+
+        suggestionsList.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() === 'li') {
+                document.getElementById('searchQuery').value = e.target.innerText;
+                suggestionsList.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
